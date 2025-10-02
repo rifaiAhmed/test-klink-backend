@@ -2,14 +2,12 @@ package models
 
 import (
 	"time"
-
-	"github.com/go-playground/validator/v10"
 )
 
 type Manager struct {
 	ID         uint   `json:"id" gorm:"primaryKey;autoIncrement"`
-	Nama       string `json:"nama" gorm:"type:varchar(50);not null" validate:"required"`
-	LocationID uint   `json:"location_id" gorm:"not null" validate:"required"`
+	Nama       string `json:"nama" gorm:"type:varchar(50);not null"`
+	LocationID uint   `json:"location_id" gorm:"not null"`
 
 	Location Location `gorm:"foreignKey:LocationID;references:ID" json:"location,omitempty"`
 
@@ -19,9 +17,4 @@ type Manager struct {
 
 func (Manager) TableName() string {
 	return "managers"
-}
-
-func (m Manager) Validate() error {
-	v := validator.New()
-	return v.Struct(m)
 }
