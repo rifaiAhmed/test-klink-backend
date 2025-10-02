@@ -1,0 +1,99 @@
+{
+  "info": {
+    "name": "Member API",
+    "_postman_id": "12345678-abcd-efgh-ijkl-1234567890ab",
+    "description": "Collection CRUD Member untuk testing",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Member",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nama\": \"Budi Santoso\",\n  \"jenis_kelamin\": \"Laki-laki\",\n  \"no_ktp\": \"1234567890123456\",\n  \"tempat_lahir\": \"Jakarta\",\n  \"tanggal_lahir\": \"1990-05-20\",\n  \"no_hp\": \"081234567890\",\n  \"email\": \"budi@example.com\",\n  \"no_rekening\": \"1234567890\",\n  \"manager_id\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/members",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["members"]
+        }
+      }
+    },
+    {
+      "name": "Update Member",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nama\": \"Budi Santoso Jr.\",\n  \"jenis_kelamin\": \"Laki-laki\",\n  \"no_ktp\": \"1234567890123456\",\n  \"tempat_lahir\": \"Jakarta\",\n  \"tanggal_lahir\": \"1990-05-20\",\n  \"no_hp\": \"081234567891\",\n  \"email\": \"budi.jr@example.com\",\n  \"no_rekening\": \"0987654321\",\n  \"manager_id\": 2\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/members/MEM-20251002-0001",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["members", "MEM-20251002-0001"]
+        }
+      }
+    },
+    {
+      "name": "Delete Member",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/members/MEM-20251002-0001",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["members", "MEM-20251002-0001"]
+        }
+      }
+    },
+    {
+      "name": "Get Member by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/members/MEM-20251002-0001",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["members", "MEM-20251002-0001"]
+        }
+      }
+    },
+    {
+      "name": "Get All Members",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/members?limit=10&skip=0&sortby=created_at&sorttype=desc&search=budi",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["members"],
+          "query": [
+            { "key": "limit", "value": "10" },
+            { "key": "skip", "value": "0" },
+            { "key": "sortby", "value": "created_at" },
+            { "key": "sorttype", "value": "desc" },
+            { "key": "search", "value": "budi" }
+          ]
+        }
+      }
+    }
+  ]
+}
