@@ -22,18 +22,8 @@ func (s *MemberService) CreateMember(ctx context.Context, member *models.Member,
 		return nil, err
 	}
 
-	saved, err := s.Repo.Save(ctx, member)
+	saved, err := s.Repo.Save(ctx, member, paketID)
 	if err != nil {
-		return nil, err
-	}
-
-	// langsung bikin registration setelah member berhasil dibuat
-	registration := models.Registration{
-		MemberID: saved.ID,
-		PaketID:  paketID,
-	}
-
-	if err := s.Repo.CreateRegistration(ctx, &registration); err != nil {
 		return nil, err
 	}
 
@@ -68,7 +58,7 @@ func (s *MemberService) UpdateMember(ctx context.Context, user *models.Member) (
 		return nil, err
 	}
 
-	return s.Repo.Save(ctx, existing)
+	return s.Repo.Save(ctx, existing, existing.Registration.PaketID)
 }
 
 func (s *MemberService) DeleteMember(ctx context.Context, id string) error {
@@ -87,4 +77,18 @@ func (s *MemberService) GetAllMembers(ctx context.Context, objComponent models.C
 	}
 
 	return members, count, nil
+}
+func (s *MemberService) GetManagers() ([]models.Option, error) {
+	data, err := s.Repo.GetManagers()
+	return data, err
+}
+
+func (s *MemberService) GetPakets() ([]models.Option, error) {
+	data, err := s.Repo.GetPakets()
+	return data, err
+}
+
+func (s *MemberService) GetMembers() ([]models.Option2, error) {
+	data, err := s.Repo.GetMembers()
+	return data, err
 }

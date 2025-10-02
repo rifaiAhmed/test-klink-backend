@@ -118,16 +118,17 @@ func seedDatabase() {
 
 		// Buat Member
 		member := models.Member{
-			ID:           "MEM-INIT-0001",
-			Nama:         "Member Test",
-			JenisKelamin: "Laki-laki",
-			NoKtp:        "1234567890123456",
-			TempatLahir:  "Jakarta",
-			TanggalLahir: time.Now().Format("2006-01-02"),
-			NoHp:         "08123456789",
-			Email:        "member@test.com",
-			NoRekening:   "1234567890",
-			ManagerID:    manager.ID,
+			ID:             "MEM-INIT-0001",
+			Nama:           "Member Test",
+			JenisKelamin:   "Laki-laki",
+			NoKtp:          "1234567890123456",
+			TempatLahir:    "Jakarta",
+			TanggalLahir:   time.Now().Format("2006-01-02"),
+			NoHp:           "08123456789",
+			Email:          "member@test.com",
+			NoRekening:     "1234567890",
+			ManagerID:      manager.ID,
+			UplineMemberID: "MEM-INIT-0001",
 		}
 		if err := DB.Create(&member).Error; err != nil {
 			log.Fatal("Seeder gagal insert Member:", err)

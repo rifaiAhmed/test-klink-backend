@@ -24,9 +24,11 @@ func ServeHTTP() {
 	{
 		member.POST("", dependency.MemberAPI.CreateMember)
 		member.GET("/:id", dependency.MemberAPI.GetMemberByID)
-		// member.PUT("/:id", dependency.MemberAPI.UpdateMember)
 		member.DELETE("/:id", dependency.MemberAPI.DeleteMember)
 		member.GET("", dependency.MemberAPI.GetAllMembers)
+		member.GET("/list-manager", dependency.MemberAPI.GetManagers)
+		member.GET("/list-paket", dependency.MemberAPI.GetPakets)
+		member.GET("/list-member", dependency.MemberAPI.GetMembers)
 	}
 
 	port := helpers.GetEnv("PORT", "8080")

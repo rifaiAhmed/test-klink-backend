@@ -5,7 +5,6 @@ import (
 	"backend-test/internal/interfaces"
 	"backend-test/internal/models"
 	"backend-test/internal/models/dto"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -77,49 +76,28 @@ func (api *IMemberHandler) GetMemberByID(c *gin.Context) {
 
 // GetAllMembers GET /members
 func (api *IMemberHandler) GetAllMembers(c *gin.Context) {
-	log := helpers.Logger
-
-	limit := 10
-	skip := 0
-	sortBy := "created_at"
-	sortType := "desc"
-	search := ""
-
-	if val := c.Query("limit"); val != "" {
-		fmt.Sscanf(val, "%d", &limit)
-	}
-	if val := c.Query("skip"); val != "" {
-		fmt.Sscanf(val, "%d", &skip)
-	}
-	if val := c.Query("sortby"); val != "" {
-		sortBy = val
-	}
-	if val := c.Query("sorttype"); val != "" {
-		sortType = val
-	}
-	if val := c.Query("search"); val != "" {
-		search = val
-	}
-
-	objComponent := models.ComponentServerSide{
-		Limit:    limit,
-		Skip:     skip,
-		SortBy:   sortBy,
-		SortType: sortType,
-		Search:   search,
+	objComponent, err := helpers.ComptServerSidePre(c)
+	if err != nil {
+		helpers.SendResponseHTTP(c, http.StatusBadRequest, "invalid query params", err.Error())
+		return
 	}
 
 	members, total, err := api.MemberService.GetAllMembers(c.Request.Context(), objComponent)
 	if err != nil {
-		log.Error("failed to get members: ", err)
 		helpers.SendResponseHTTP(c, http.StatusInternalServerError, "failed to get members", err.Error())
 		return
 	}
 
-	helpers.SendResponseHTTP(c, http.StatusOK, "success", gin.H{
-		"total": total,
-		"data":  members,
-	})
+	resp := helpers.APIResponseView(
+		"success",
+		http.StatusOK,
+		"OK",
+		total,
+		objComponent.Limit,
+		members,
+	)
+
+	c.JSON(http.StatusOK, resp)
 }
 
 // UpdateMember PUT /members/:id
@@ -158,4 +136,43 @@ func (api *IMemberHandler) DeleteMember(c *gin.Context) {
 	}
 
 	helpers.SendResponseHTTP(c, http.StatusOK, "member deleted successfully", nil)
+}
+
+// Getlist Paket
+func (api *IMemberHandler) GetPakets(c *gin.Context) {
+	log := helpers.Logger
+	pakets, err := api.MemberService.GetPakets()
+	if err != nil {
+		log.Error("failed to get members: ", err)
+		helpers.SendResponseHTTP(c, http.StatusInternalServerError, "failed to get members", err.Error())
+		return
+	}
+
+	helpers.SendResponseHTTP(c, http.StatusOK, "success", pakets)
+}
+
+// Getlist Manager
+func (api *IMemberHandler) GetManagers(c *gin.Context) {
+	log := helpers.Logger
+	managers, err := api.MemberService.GetManagers()
+	if err != nil {
+		log.Error("failed to get managers: ", err)
+		helpers.SendResponseHTTP(c, http.StatusInternalServerError, "failed to get managers", err.Error())
+		return
+	}
+
+	helpers.SendResponseHTTP(c, http.StatusOK, "success", managers)
+}
+
+// Get List Member
+func (api *IMemberHandler) GetMembers(c *gin.Context) {
+	log := helpers.Logger
+	members, err := api.MemberService.GetMembers()
+	if err != nil {
+		log.Error("failed to get members: ", err)
+		helpers.SendResponseHTTP(c, http.StatusInternalServerError, "failed to get members", err.Error())
+		return
+	}
+
+	helpers.SendResponseHTTP(c, http.StatusOK, "success", members)
 }

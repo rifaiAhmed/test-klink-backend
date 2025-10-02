@@ -20,3 +20,13 @@ type MultipleIngredients struct {
 	RecipeID int    `json:"id" binding:"required"`
 	Data     string `json:"data" binding:"required"`
 }
+
+type Option struct {
+	Value int    `json:"value"`
+	Label string `json:"label"`
+}
+
+type Option2 struct {
+	Value string `json:"value"`
+	Label string `json:"label"`
+}

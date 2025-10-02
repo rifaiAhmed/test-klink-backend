@@ -28,7 +28,7 @@ func (r *MemberRepository) generateMemberID(ctx context.Context) (string, error)
 	return newID, nil
 }
 
-func (r *MemberRepository) Save(ctx context.Context, member *models.Member) (*models.Member, error) {
+func (r *MemberRepository) Save(ctx context.Context, member *models.Member, paketID uint) (*models.Member, error) {
 	if member.ID == "" {
 		id, err := r.generateMemberID(ctx)
 		if err != nil {
@@ -38,20 +38,21 @@ func (r *MemberRepository) Save(ctx context.Context, member *models.Member) (*mo
 	}
 
 	err := r.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		// Simpan member
-		if err := tx.Save(member).Error; err != nil {
+		if err := tx.Create(member).Error; err != nil {
 			return err
 		}
 
-		if member.Registration.ID == 0 {
-			reg := &models.Registration{
-				MemberID: member.ID,
-				PaketID:  member.RegistartionID,
-			}
-			if err := tx.Create(reg).Error; err != nil {
-				return err
-			}
-			member.Registration = *reg
+		reg := &models.Registration{
+			MemberID: member.ID,
+			PaketID:  paketID,
+		}
+		if err := tx.Create(reg).Error; err != nil {
+			return err
+		}
+
+		member.RegistartionID = reg.ID
+		if err := tx.Save(member).Error; err != nil {
+			return err
 		}
 
 		return nil
@@ -61,7 +62,7 @@ func (r *MemberRepository) Save(ctx context.Context, member *models.Member) (*mo
 		return nil, err
 	}
 
-	if err := r.DB.Preload("Manager").Preload("Registration.Paket").First(member, "id = ?", member.ID).Error; err != nil {
+	if err := r.DB.Preload("Manager").Preload("Manager.Location").Preload("Registration.Paket").First(member, "id = ?", member.ID).Error; err != nil {
 		return nil, err
 	}
 
@@ -74,7 +75,7 @@ func (r *MemberRepository) CreateRegistration(ctx context.Context, reg *models.R
 
 func (r *MemberRepository) FindByID(ctx context.Context, id string) (*models.Member, error) {
 	var obj models.Member
-	if err := r.DB.WithContext(ctx).Preload("Manager").Preload("Registration.Paket").Where("id = ?", id).First(&obj).Error; err != nil {
+	if err := r.DB.WithContext(ctx).Preload("Manager").Preload("Manager.Location").Preload("Registration.Paket").Where("id = ?", id).First(&obj).Error; err != nil {
 		return nil, err
 	}
 	return &obj, nil
@@ -125,4 +126,61 @@ func (r *MemberRepository) CountData(ctx context.Context, objComponent models.Co
 	}
 
 	return count, nil
+}
+
+func (r *MemberRepository) GetManagers() ([]models.Option, error) {
+	var (
+		managers []models.Manager
+		options  []models.Option
+	)
+
+	if err := r.DB.Find(&managers).Error; err != nil {
+		return nil, err
+	}
+	for _, m := range managers {
+		options = append(options, models.Option{
+			Value: int(m.ID),
+			Label: m.Nama,
+		})
+	}
+
+	return options, nil
+}
+
+func (r *MemberRepository) GetPakets() ([]models.Option, error) {
+	var (
+		pakets  []models.Paket
+		options []models.Option
+	)
+
+	if err := r.DB.Find(&pakets).Error; err != nil {
+		return nil, err
+	}
+	for _, m := range pakets {
+		options = append(options, models.Option{
+			Value: int(m.ID),
+			Label: m.NamaPaket,
+		})
+	}
+
+	return options, nil
+}
+
+func (r *MemberRepository) GetMembers() ([]models.Option2, error) {
+	var (
+		members []models.Member
+		options []models.Option2
+	)
+
+	if err := r.DB.Find(&members).Error; err != nil {
+		return nil, err
+	}
+	for _, m := range members {
+		options = append(options, models.Option2{
+			Value: m.ID,
+			Label: m.Nama,
+		})
+	}
+
+	return options, nil
 }
